@@ -1,236 +1,125 @@
-# Node.js Homework 5 - Authentication
+# Contact Management API with Authentication
 
-This is a REST API for managing contacts with user authentication.
+A REST API for contact management with user authentication and authorization features.
 
-## Environment Variables
+## 🚀 Live API
 
-The following environment variables are required:
+The API is live at: [https://nodejs-hw-05-lxwb.onrender.com](https://nodejs-hw-05-lxwb.onrender.com)
 
-- `PORT` - The port on which the server will run (default: 3000)
-- `NODE_ENV` - The environment (development/production)
-- `MONGODB_URI` - MongoDB connection string
-- `JWT_SECRET` - Secret key for JWT token generation
-
-## Deployment on Render.com
-
-The application is configured to deploy on render.com with the following settings:
-
-- Service Type: Web Service
-- Environment: Node.js
-- Build Command: `npm install`
-- Start Command: `node src/index.js`
-- Port: 3001 (configured in render.yaml)
-
-### Required Environment Variables on Render.com
-
-Set these environment variables in your render.com dashboard:
-
-1. `MONGODB_URI` - Your MongoDB connection string
-2. `JWT_SECRET` - A secure secret key for JWT tokens
-3. `NODE_ENV` - Set to "production"
-
-### Health Check
-
-The service includes a health check endpoint at `/api/contacts` that render.com will use to monitor the service.
-
-## API Endpoints
+## 📋 API Endpoints
 
 ### Authentication
 
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login user
-- `POST /api/auth/refresh` - Refresh access token
-- `POST /api/auth/logout` - Logout user
-
-### Contacts
-
-All contact endpoints require authentication via Bearer token.
-
-- `GET /api/contacts` - Get all contacts (with pagination, sorting, and filtering)
-- `GET /api/contacts/:contactId` - Get a single contact
-- `POST /api/contacts` - Create a new contact
-- `PATCH /api/contacts/:contactId` - Update a contact
-- `DELETE /api/contacts/:contactId` - Delete a contact
-
-## Local Development
-
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Create a `.env` file with the required environment variables
-4. Start the server: `npm start`
-
-## Testing
-
-The API can be tested using tools like Postman or curl. Remember to:
-
-1. Register a user first
-2. Login to get an access token
-3. Include the access token in the Authorization header for contact endpoints:
-   ```
-   Authorization: Bearer <access_token>
+1. **User Registration**
+   - **URL**: `https://nodejs-hw-05-lxwb.onrender.com/api/auth/register`
+   - **Method**: `POST`
+   - **Body**:
+   ```json
+   {
+     "name": "Test User",
+     "email": "test@example.com",
+     "password": "test123456"
+   }
    ```
 
-## Features
-
-- CRUD operations for contacts
-- MongoDB database integration
-- Error handling middleware
-- Input validation
-- RESTful API design
-
-## Prerequisites
-
-- Node.js (v14 or higher)
-- MongoDB database
-
-## Setup
-
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
+2. **User Login**
+   - **URL**: `https://nodejs-hw-05-lxwb.onrender.com/api/auth/login`
+   - **Method**: `POST`
+   - **Body**:
+   ```json
+   {
+     "email": "test@example.com",
+     "password": "test123456"
+   }
    ```
-3. Create a `.env` file in the root directory with the following variables:
-   ```
-   MONGODB_URI=your_mongodb_connection_string
-   PORT=3000
-   ```
-4. Start the server:
-   ```bash
-   # Development mode
-   npm run dev
-   
-   # Production mode
-   npm start
-   ```
+   - **Response**: Returns an access token
 
-## API Endpoints
+### Contact Operations
 
-### Get All Contacts
-- **GET** `/contacts`
-- **Description**: Retrieve all contacts with pagination, sorting, and filtering
-- **Query Parameters**:
-  - `page` (optional): Page number (default: 1)
-  - `perPage` (optional): Items per page (default: 10)
-  - `sortBy` (optional): Field to sort by (default: 'name')
-  - `sortOrder` (optional): Sort order ('asc' or 'desc', default: 'asc')
-  - `type` (optional): Filter by contact type ('work', 'home', 'personal')
-  - `isFavourite` (optional): Filter by favorite status (true/false)
-- **Response Format**:
-  ```json
-  {
-    "status": 200,
-    "message": "Successfully found contacts!",
-    "data": {
-      "data": [/* contacts array */],
-      "page": 1,
-      "perPage": 10,
-      "totalItems": 100,
-      "totalPages": 10,
-      "hasPreviousPage": false,
-      "hasNextPage": true
-    }
-  }
-  ```
-
-### Get Contact by ID
-- **GET** `/contacts/:contactId`
-- **Description**: Retrieve a specific contact by ID
-- **Parameters**: 
-  - `contactId` (path parameter) - The ID of the contact to retrieve
-- **Validation**: ID format is validated automatically
-
-### Create New Contact
-- **POST** `/contacts`
-- **Description**: Create a new contact
-- **Validation Rules**:
-  - `name`: Required, 3-20 characters
-  - `phoneNumber`: Required, 3-20 characters
-  - `email`: Optional, must be valid email format
-  - `contactType`: Required, must be one of: 'work', 'home', 'personal'
-  - `isFavourite`: Optional, boolean (default: false)
-
-### Update Contact
-- **PATCH** `/contacts/:contactId`
-- **Description**: Update an existing contact
-- **Parameters**: 
-  - `contactId` (path parameter) - The ID of the contact to update
-- **Validation**: Same rules as Create Contact, but all fields are optional
-- **ID Validation**: Contact ID format is validated automatically
-
-### Delete Contact
-- **DELETE** `/contacts/:contactId`
-- **Description**: Delete a contact by ID
-- **Parameters**: 
-  - `contactId` (path parameter) - The ID of the contact to delete
-- **ID Validation**: Contact ID format is validated automatically
-
-## Error Responses
-
-The API returns error responses with appropriate HTTP status codes:
-- `200` - Success
-- `201` - Created
-- `400` - Bad Request (validation errors, invalid ID format)
-- `404` - Not Found (e.g., "Contact not found" when trying to get/update/delete a non-existent contact)
-- `500` - Internal Server Error
-
-## Validation Rules
-
-### Contact Schema
-```javascript
-{
-  name: {
-    type: String,
-    required: true,
-    minLength: 3,
-    maxLength: 20
-  },
-  phoneNumber: {
-    type: String,
-    required: true,
-    minLength: 3,
-    maxLength: 20
-  },
-  email: {
-    type: String,
-    optional: true,
-    format: 'email'
-  },
-  isFavourite: {
-    type: Boolean,
-    default: false
-  },
-  contactType: {
-    type: String,
-    required: true,
-    enum: ['work', 'home', 'personal'],
-    default: 'personal'
-  }
-}
+All contact endpoints require a Bearer token in the `Authorization` header:
+```
+Authorization: Bearer <access_token>
 ```
 
-## Query Parameters
+1. **List All Contacts**
+   - **URL**: `https://nodejs-hw-05-lxwb.onrender.com/api/contacts`
+   - **Method**: `GET`
+   - **Query Parameters**:
+     - `page` (optional): Page number (default: 1)
+     - `perPage` (optional): Items per page (default: 10)
+     - `sortBy` (optional): Field to sort by (default: 'name')
+     - `sortOrder` (optional): Sort direction ('asc' or 'desc', default: 'asc')
+     - `type` (optional): Filter by contact type ('work', 'home', 'personal')
+     - `isFavourite` (optional): Filter by favorite status (true/false)
 
-### Pagination
-- `page`: Page number (default: 1)
-- `perPage`: Items per page (default: 10)
+2. **Create New Contact**
+   - **URL**: `https://nodejs-hw-05-lxwb.onrender.com/api/contacts`
+   - **Method**: `POST`
+   - **Body**:
+   ```json
+   {
+     "name": "John Doe",
+     "phoneNumber": "1234567890",
+     "email": "john@example.com",
+     "contactType": "personal",
+     "isFavourite": false
+   }
+   ```
 
-### Sorting
-- `sortBy`: Field to sort by (default: 'name')
-- `sortOrder`: Sort direction ('asc' or 'desc', default: 'asc')
+3. **Update Contact**
+   - **URL**: `https://nodejs-hw-05-lxwb.onrender.com/api/contacts/:contactId`
+   - **Method**: `PATCH`
+   - **Body** (all fields are optional):
+   ```json
+   {
+     "name": "John Updated",
+     "phoneNumber": "9876543210",
+     "email": "john.updated@example.com",
+     "contactType": "work",
+     "isFavourite": true
+   }
+   ```
 
-### Filtering
-- `type`: Filter by contact type ('work', 'home', 'personal')
-- `isFavourite`: Filter by favorite status (true/false)
+4. **Delete Contact**
+   - **URL**: `https://nodejs-hw-05-lxwb.onrender.com/api/contacts/:contactId`
+   - **Method**: `DELETE`
 
-## Contact Schema
+## 🔒 Validation Rules
 
-```javascript
-{
-  name: String,        // required
-  phoneNumber: String, // required
-  email: String,       // optional
-  isFavourite: Boolean,// optional, defaults to false
-  contactType: String  // required, enum: ['work', 'home', 'personal']
-}
-``` 
+### User Registration
+- `name`: Required
+- `email`: Required, valid email format
+- `password`: Required, minimum 6 characters
+
+### Contact Creation/Update
+- `name`: Required, 3-20 characters
+- `phoneNumber`: Required, 3-20 characters
+- `email`: Optional, valid email format
+- `contactType`: Required, one of: 'work', 'home', 'personal'
+- `isFavourite`: Optional, boolean (default: false)
+
+## ⚙️ Status Codes
+
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request (validation errors)
+- `401` - Unauthorized (authentication required)
+- `404` - Not Found
+- `409` - Conflict (e.g., email already in use)
+- `500` - Server Error
+
+## 🚀 Deployment on Render.com
+
+1. Create a new Web Service on [Render.com](https://render.com)
+2. Connect your GitHub repository
+3. Configure the following settings:
+   - **Build Command**: `npm install`
+   - **Start Command**: `node src/index.js`
+   - **Environment Variables**:
+     - `MONGODB_URI`
+     - `JWT_SECRET`
+     - `NODE_ENV=production`
+
+## 📝 License
+
+MIT 
