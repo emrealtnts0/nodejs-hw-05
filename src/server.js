@@ -12,6 +12,22 @@ export const startServer = () => {
   app.use(express.json());
   app.use(cookieParser());
 
+  // Root route
+  app.get('/', (req, res) => {
+    res.json({
+      status: 'success',
+      message: 'Welcome to Contact Management API',
+      data: {
+        version: '1.0.0',
+        endpoints: {
+          auth: '/api/auth',
+          contacts: '/api/contacts'
+        },
+        documentation: 'Please refer to README.md for API documentation'
+      }
+    });
+  });
+
   // Routes
   app.use('/api/contacts', contactsRouter);
   app.use('/api/auth', authRouter);
