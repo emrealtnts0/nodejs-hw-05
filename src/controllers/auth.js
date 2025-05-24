@@ -15,10 +15,10 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  const { accessToken } = await authService.login(email, password);
+  const { accessToken, refreshToken } = await authService.login(email, password);
 
   // Set refresh token in HTTP-only cookie
-  res.cookie('refreshToken', accessToken, {
+  res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
@@ -35,10 +35,10 @@ const login = async (req, res) => {
 const refresh = async (req, res) => {
   const { refreshToken } = req.cookies;
 
-  const { accessToken } = await authService.refresh(refreshToken);
+  const { accessToken, newRefreshToken } = await authService.refresh(refreshToken);
 
   // Set new refresh token in HTTP-only cookie
-  res.cookie('refreshToken', accessToken, {
+  res.cookie('refreshToken', newRefreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',

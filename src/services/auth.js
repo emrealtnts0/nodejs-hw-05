@@ -39,21 +39,20 @@ const login = async (email, password) => {
   await Session.deleteMany({ userId: user._id });
 
   // Generate tokens
-  const tokens = generateTokens(user._id);
+  const { accessToken, refreshToken } = generateTokens(user._id);
 
   // Create new session
   await Session.create({
     userId: user._id,
-    ...tokens
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+    refreshTokenValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
   });
 
-  // Return user data and access token
-  const userResponse = user.toObject();
-  delete userResponse.password;
-
   return {
-    user: userResponse,
-    accessToken: tokens.accessToken
+    accessToken,
+    refreshToken
   };
 };
 
@@ -79,16 +78,20 @@ const refresh = async (refreshToken) => {
   await Session.deleteOne({ _id: existingSession._id });
 
   // Generate new tokens
-  const tokens = generateTokens(userId);
+  const { accessToken, refreshToken: newRefreshToken } = generateTokens(userId);
 
   // Create new session
   await Session.create({
     userId,
-    ...tokens
+    accessToken,
+    refreshToken: newRefreshToken,
+    accessTokenValidUntil: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+    refreshTokenValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
   });
 
   return {
-    accessToken: tokens.accessToken
+    accessToken,
+    newRefreshToken
   };
 };
 
