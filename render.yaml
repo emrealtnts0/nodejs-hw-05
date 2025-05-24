@@ -13,5 +13,5 @@ services:
         sync: false
       - key: JWT_SECRET
         sync: false
-    healthCheckPath: /api/contacts
+    healthCheckPath: /
     autoDeploy: true 
