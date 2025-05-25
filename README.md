@@ -1,6 +1,6 @@
 # Contact Management API with Authentication
 
-A REST API for contact management with user authentication and authorization features, implemented as a step-by-step task.
+This project implements a Contact Management API with user authentication features. The API allows users to register, login, manage their sessions, and handle their contacts.
 
 ## 🚀 Live API
 
@@ -9,126 +9,147 @@ The API is live at: [https://nodejs-hw-05-lxwb.onrender.com](https://nodejs-hw-0
 ## 📋 Implementation Steps
 
 ### Step 1: Branch Setup
-- Created `hw5-auth` branch from `hw4-validation` branch
+- Created `hw5-auth` branch from `hw4-validation`
+- All development is done in the `hw5-auth` branch
 
 ### Step 2: Database Models
 
 #### User Model
 ```javascript
 {
-  name: String,        // required
-  email: String,       // required, unique, email format
-  password: String,    // required
-  createdAt: Date,     // automatically set
-  updatedAt: Date      // automatically updated
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
 }
 ```
 
 #### Session Model
 ```javascript
 {
-  userId: String,              // required
-  accessToken: String,         // required
-  refreshToken: String,        // required
-  accessTokenValidUntil: Date, // required (15 minutes)
-  refreshTokenValidUntil: Date // required (30 days)
+  userId: { type: String, required: true },
+  accessToken: { type: String, required: true },
+  refreshToken: { type: String, required: true },
+  accessTokenValidUntil: { type: Date, required: true },
+  refreshTokenValidUntil: { type: Date, required: true }
 }
 ```
 
-## 🔐 Authentication Endpoints
-
-### 1. User Registration
-- **URL**: `https://nodejs-hw-05-lxwb.onrender.com/api/auth/register`
-- **Method**: `POST`
-- **Body**:
-```json
-{
-  "name": "Test User",
-  "email": "test@example.com",
-  "password": "test123456"
-}
-```
-- **Response** (201 Created):
-```json
-{
-  "status": "success",
-  "message": "Successfully registered a user!",
-  "data": {
-    "name": "Test User",
-    "email": "test@example.com",
-    "createdAt": "2024-03-24T...",
-    "updatedAt": "2024-03-24T..."
+### Step 3: User Registration
+- **Endpoint**: `POST /api/auth/register`
+- **Request Body**:
+  ```json
+  {
+    "name": "string",
+    "email": "string",
+    "password": "string"
   }
-}
-```
-- **Error** (409 Conflict): "Email in use"
-
-### 2. User Login
-- **URL**: `https://nodejs-hw-05-lxwb.onrender.com/api/auth/login`
-- **Method**: `POST`
-- **Body**:
-```json
-{
-  "email": "test@example.com",
-  "password": "test123456"
-}
-```
-- **Response** (200 OK):
-```json
-{
-  "status": "success",
-  "message": "Successfully logged in an user!",
-  "data": {
-    "accessToken": "eyJhbGciOiJ..."
+  ```
+- **Response**: 201 Created
+  ```json
+  {
+    "status": "success",
+    "message": "Successfully registered a user!",
+    "data": {
+      "name": "string",
+      "email": "string",
+      "_id": "string",
+      "createdAt": "date",
+      "updatedAt": "date"
+    }
   }
-}
-```
-- **Features**:
-  - Validates email and password
-  - Creates new session (deletes old one if exists)
-  - Sets refresh token in HTTP-only cookie
-  - Returns access token in response body
-  - Access token valid for 15 minutes
-  - Refresh token valid for 30 days
+  ```
+- Features:
+  - Password hashing with bcrypt
+  - Email uniqueness validation
+  - Data validation
+  - Error handling (409 for duplicate email)
 
-### 3. Session Refresh
-- **URL**: `https://nodejs-hw-05-lxwb.onrender.com/api/auth/refresh`
-- **Method**: `POST`
-- **Uses**: Refresh token from cookies
-- **Response** (200 OK):
-```json
-{
-  "status": "success",
-  "message": "Successfully refreshed a session!",
-  "data": {
-    "accessToken": "eyJhbGciOiJ..."
+### Step 4: User Login
+- **Endpoint**: `POST /api/auth/login`
+- **Request Body**:
+  ```json
+  {
+    "email": "string",
+    "password": "string"
   }
-}
-```
-- **Features**:
-  - Deletes old session
-  - Creates new session with new tokens
-  - Updates refresh token in cookies
-  - Returns new access token
+  ```
+- **Response**: 200 OK
+  ```json
+  {
+    "status": "success",
+    "message": "Successfully logged in an user!",
+    "data": {
+      "accessToken": "string"
+    }
+  }
+  ```
+- Features:
+  - Access token (15 minutes validity)
+  - Refresh token (30 days validity, stored in HTTP-only cookie)
+  - Session management
+  - Error handling (401 for invalid credentials)
 
-### 4. User Logout
-- **URL**: `https://nodejs-hw-05-lxwb.onrender.com/api/auth/logout`
-- **Method**: `POST`
+### Step 5: Session Refresh
+- **Endpoint**: `POST /api/auth/refresh`
+- **Request**: Requires refresh token in cookies
+- **Response**: 200 OK
+  ```json
+  {
+    "status": "success",
+    "message": "Successfully refreshed a session!",
+    "data": {
+      "accessToken": "string"
+    }
+  }
+  ```
+- Features:
+  - Automatic session renewal
+  - New access token generation
+  - Cookie-based refresh token management
+
+### Step 6: User Logout
+- **Endpoint**: `POST /api/auth/logout`
+- **Request**: Requires valid session
 - **Response**: 204 No Content
+- Features:
+  - Session deletion
+  - Cookie cleanup
+
+### Step 7: Authentication Middleware
+- **Name**: `authenticate`
+- **Location**: `src/middlewares/authenticate.js`
 - **Features**:
-  - Deletes current session
-  - Clears refresh token cookie
+  - Bearer token validation
+  - Token expiration check
+  - User identification
+  - Error handling (401 for invalid/expired tokens)
+- **Usage**: Applied to all contact routes
 
-## 🔒 Authentication Middleware
+### Step 8: Contact Model Update
+- Added `userId` field to Contact model
+- Updated contact operations to be user-specific
+- Modified routes to use authenticated user's ID
+- Features:
+  - User-specific contact management
+  - Automatic userId assignment
+  - Data isolation between users
 
-The `authenticate` middleware:
-- Validates Bearer token in Authorization header
-- Verifies token expiration
-- Attaches user object to request
-- Returns 401 if:
-  - Token is missing
-  - Token is invalid
-  - Token has expired
+## 🔐 API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `POST /api/auth/refresh` - Session refresh
+- `POST /api/auth/logout` - User logout
+
+### Contacts (All require authentication)
+- `POST /api/contacts` - Create contact
+- `GET /api/contacts` - Get all contacts
+- `GET /api/contacts/:id` - Get contact by ID
+- `PATCH /api/contacts/:id` - Update contact
+- `DELETE /api/contacts/:id` - Delete contact
 
 ## ⚙️ Status Codes
 
@@ -137,9 +158,40 @@ The `authenticate` middleware:
 - `204` - No Content (Logout)
 - `400` - Bad Request (validation errors)
 - `401` - Unauthorized (invalid/missing token)
+- `404` - Not Found
 - `409` - Conflict (email in use)
-- `500` - Server Error
 
 ## 📝 License
 
 MIT 
+
+## Setup and Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create `.env` file with required environment variables:
+   ```
+   PORT=3000
+   MONGODB_URI=mongodb://localhost:27017/contacts_db
+   JWT_SECRET=your-secret-key
+   NODE_ENV=development
+   ```
+4. Start the server:
+   ```bash
+   npm run dev
+   ```
+
+## Technologies Used
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- JWT
+- bcrypt
+- cookie-parser
+- dotenv
+- createHttpError
+- Joi (validation) 
