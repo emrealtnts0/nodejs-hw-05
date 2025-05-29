@@ -1,9 +1,14 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import contactsRouter from './routers/contacts.js';
 import authRouter from './routers/auth.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const startServer = () => {
   const app = express();
@@ -11,6 +16,7 @@ export const startServer = () => {
   // Middlewares
   app.use(express.json());
   app.use(cookieParser());
+  app.use(express.static(path.join(__dirname, 'public')));
 
   // Root route
   app.get('/', (req, res) => {
@@ -28,7 +34,12 @@ export const startServer = () => {
     });
   });
 
-  // Routes
+  // Reset password page route
+  app.get('/auth/reset-password', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'reset-password.html'));
+  });
+
+  // API Routes
   app.use('/api/contacts', contactsRouter);
   app.use('/api/auth', authRouter);
 
