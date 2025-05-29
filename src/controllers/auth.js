@@ -1,4 +1,5 @@
 import { authService } from '../services/auth.js';
+import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -67,9 +68,27 @@ const logout = async (req, res) => {
   res.status(204).send();
 };
 
+const sendResetEmail = async (req, res) => {
+  const { email } = req.body;
+
+  const result = await authService.sendResetEmail(email);
+
+  res.status(200).json(result);
+};
+
+const resetPassword = async (req, res) => {
+  const { token, password } = req.body;
+
+  const result = await authService.resetPassword(token, password);
+
+  res.status(200).json(result);
+};
+
 export const authController = {
-  register,
-  login,
-  refresh,
-  logout
+  register: ctrlWrapper(register),
+  login: ctrlWrapper(login),
+  refresh: ctrlWrapper(refresh),
+  logout: ctrlWrapper(logout),
+  sendResetEmail: ctrlWrapper(sendResetEmail),
+  resetPassword: ctrlWrapper(resetPassword)
 }; 

@@ -23,6 +23,10 @@ const contactsSchema = new Schema(
       enum: ['work', 'home', 'personal'],
       default: 'personal',
     },
+    photo: {
+      type: String,
+      default: 'https://www.gravatar.com/avatar/?d=mp&f=y',
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
