@@ -1,197 +1,101 @@
-# Contact Management API with Authentication
+<h1 align="center">NODEJS-HW-05</h1>
 
-This project implements a Contact Management API with user authentication features. The API allows users to register, login, manage their sessions, and handle their contacts.
+<p align="center">Empowering Secure Connections, Simplifying User Management</p>
 
-## 🚀 Live API
+<p align="center">
+  <!-- Dynamic badges - You may need to customize these for your specific GitHub repository -->
+  <img src="https://img.shields.io/github/last-commit/emrealtnts0/nodejs-hw-05?color=blue&label=last%20commit" alt="Last Commit">
+  <img src="https://img.shields.io/github/languages/top/emrealtnts0/nodejs-hw-05?color=orange&label=JavaScript" alt="JavaScript Percentage">
+  <img src="https://img.shields.io/github/languages/count/emrealtnts0/nodejs-hw-05?color=green&label=languages" alt="Languages Count">
+</p>
 
-The API is live at: [https://nodejs-hw-05-lxwb.onrender.com](https://nodejs-hw-05-lxwb.onrender.com)
+<p align="center">Built with the tools and technologies:</p>
 
-## 📋 Implementation Steps
+<p align="center">
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js">
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express.js">
+  <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB">
+  <img src="https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white" alt="npm">
+  <img src="https://img.shields.io/badge/Bcrypt-2E7D32?style=for-the-badge&logo=bcrypt&logoColor=white" alt="Bcrypt">
+  <img src="https://img.shields.io/badge/JSON%20Web%20Tokens-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white" alt="JSON Web Tokens">
+  <img src="https://img.shields.io/badge/Joi-E43B3D?style=for-the-badge&logo=joi&logoColor=white" alt="Joi">
+  <img src="https://img.shields.io/badge/Pino-FF0000?style=for-the-badge&logo=pino&logoColor=white" alt="Pino">
+  <img src="https://img.shields.io/badge/Cors-222222?style=for-the-badge&logo=cors&logoColor=white" alt="Cors">
+  <img src="https://img.shields.io/badge/.env-ECD53F?style=for-the-badge&logo=dot-env&logoColor=black" alt=".env">
+  <img src="https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white" alt="ESLint">
+  <img src="https://img.shields.io/badge/YAML-CB171E?style=for-the-badge&logo=yaml&logoColor=white" alt="YAML">
+</p>
 
-### Step 1: Branch Setup
-- Created `hw5-auth` branch from `hw4-validation`
-- All development is done in the `hw5-auth` branch
+## Project Overview
 
-### Step 2: Database Models
+This project implements a robust REST API focusing on user authentication and contact management. Key features include secure user registration, login with JWT-based session management, and comprehensive CRUD operations for contacts. The API ensures secure connections and streamlines user data handling with user-specific contact isolation.
 
-#### User Model
-```javascript
-{
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
-}
-```
+## Features Implemented in this Project
 
-#### Session Model
-```javascript
-{
-  userId: { type: String, required: true },
-  accessToken: { type: String, required: true },
-  refreshToken: { type: String, required: true },
-  accessTokenValidUntil: { type: Date, required: true },
-  refreshTokenValidUntil: { type: Date, required: true }
-}
-```
+*   **User Authentication**: Secure registration, login, logout functionalities.
+*   **Session Management**: JWT-based access and refresh tokens for secure sessions.
+*   **Contact Management**: Full CRUD operations for contacts with user isolation.
+*   **Data Validation**: Robust input validation for all API endpoints.
+*   **Middleware for Authentication**: Custom middleware to secure contact routes.
+*   **User-Specific Contacts**: Ensures users can only manage their own contacts.
 
-### Step 3: User Registration
-- **Endpoint**: `POST /api/auth/register`
-- **Request Body**:
-  ```json
-  {
-    "name": "string",
-    "email": "string",
-    "password": "string"
-  }
-  ```
-- **Response**: 201 Created
-  ```json
-  {
-    "status": "success",
-    "message": "Successfully registered a user!",
-    "data": {
-      "name": "string",
-      "email": "string",
-      "_id": "string",
-      "createdAt": "date",
-      "updatedAt": "date"
-    }
-  }
-  ```
-- Features:
-  - Password hashing with bcrypt
-  - Email uniqueness validation
-  - Data validation
-  - Error handling (409 for duplicate email)
+## Installation
 
-### Step 4: User Login
-- **Endpoint**: `POST /api/auth/login`
-- **Request Body**:
-  ```json
-  {
-    "email": "string",
-    "password": "string"
-  }
-  ```
-- **Response**: 200 OK
-  ```json
-  {
-    "status": "success",
-    "message": "Successfully logged in an user!",
-    "data": {
-      "accessToken": "string"
-    }
-  }
-  ```
-- Features:
-  - Access token (15 minutes validity)
-  - Refresh token (30 days validity, stored in HTTP-only cookie)
-  - Session management
-  - Error handling (401 for invalid credentials)
+1.  **Clone the project**:
+    ```bash
+    git clone <repository-url>
+    cd nodejs-hw-05
+    ```
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+3.  **Create `.env` file**:
+    ```bash
+    cp .env.example .env
+    ```
+4.  **Configure Environment Variables**: Edit the `.env` file and set the required variables.
+    ```env
+    # Server
+    PORT=3000
 
-### Step 5: Session Refresh
-- **Endpoint**: `POST /api/auth/refresh`
-- **Request**: Requires refresh token in cookies
-- **Response**: 200 OK
-  ```json
-  {
-    "status": "success",
-    "message": "Successfully refreshed a session!",
-    "data": {
-      "accessToken": "string"
-    }
-  }
-  ```
-- Features:
-  - Automatic session renewal
-  - New access token generation
-  - Cookie-based refresh token management
+    # Database
+    MONGODB_URI=mongodb://localhost:27017/your-database-name
 
-### Step 6: User Logout
-- **Endpoint**: `POST /api/auth/logout`
-- **Request**: Requires valid session
-- **Response**: 204 No Content
-- Features:
-  - Session deletion
-  - Cookie cleanup
+    # JWT
+    JWT_SECRET=your-jwt-secret
+    ```
+5.  **Start the application**:
+    ```bash
+    npm start
+    ```
 
-### Step 7: Authentication Middleware
-- **Name**: `authenticate`
-- **Location**: `src/middlewares/authenticate.js`
-- **Features**:
-  - Bearer token validation
-  - Token expiration check
-  - User identification
-  - Error handling (401 for invalid/expired tokens)
-- **Usage**: Applied to all contact routes
-
-### Step 8: Contact Model Update
-- Added `userId` field to Contact model
-- Updated contact operations to be user-specific
-- Modified routes to use authenticated user's ID
-- Features:
-  - User-specific contact management
-  - Automatic userId assignment
-  - Data isolation between users
-
-## 🔐 API Endpoints
+## API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `POST /api/auth/refresh` - Session refresh
-- `POST /api/auth/logout` - User logout
 
-### Contacts (All require authentication)
-- `POST /api/contacts` - Create contact
-- `GET /api/contacts` - Get all contacts
-- `GET /api/contacts/:id` - Get contact by ID
-- `PATCH /api/contacts/:id` - Update contact
-- `DELETE /api/contacts/:id` - Delete contact
+*   `POST /api/auth/register`: Register a new user.
+*   `POST /api/auth/login`: Log in an existing user and create a session with JWTs.
+*   `POST /api/auth/refresh`: Refresh an expired session using a refresh token.
+*   `POST /api/auth/logout`: Invalidate the current user session.
 
-## ⚙️ Status Codes
+### Contact Management
 
-- `200` - Success
-- `201` - Created
-- `204` - No Content (Logout)
-- `400` - Bad Request (validation errors)
-- `401` - Unauthorized (invalid/missing token)
-- `404` - Not Found
-- `409` - Conflict (email in use)
+*   `GET /api/contacts`: Retrieve all contacts for the authenticated user.
+*   `GET /api/contacts/:contactId`: Retrieve a specific contact by ID for the authenticated user.
+*   `POST /api/contacts`: Create a new contact for the authenticated user.
+*   `PATCH /api/contacts/:contactId`: Update an existing contact by ID for the authenticated user.
+*   `DELETE /api/contacts/:contactId`: Delete a contact by ID for the authenticated user.
 
-## 📝 License
+## Security Considerations
 
-MIT 
+*   **Environment Variables**: All sensitive data is managed through `.env` files.
+*   **JWT Authentication**: Utilizes JSON Web Tokens for secure session management.
+*   **Password Hashing**: Passwords are securely hashed using `bcrypt` before storage.
+*   **Token Expiration**: Access tokens (15 minutes) and refresh tokens (30 days) have defined validity periods.
+*   **Route Protection**: Most API endpoints require `Bearer` token authentication.
+*   **User Isolation**: Ensures users can only access and modify their own contacts.
 
-## Setup and Installation
+## License
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create `.env` file with required environment variables:
-   ```
-   PORT=3000
-   MONGODB_URI=mongodb://localhost:27017/contacts_db
-   JWT_SECRET=your-secret-key
-   NODE_ENV=development
-   ```
-4. Start the server:
-   ```bash
-   npm run dev
-   ```
-
-## Technologies Used
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT
-- bcrypt
-- cookie-parser
-- dotenv
-- createHttpError
-- Joi (validation) 
+This project is licensed under the MIT License. See the LICENSE file for details.
