@@ -1,12 +1,12 @@
-<h1 align="center">NODEJS-HW-05</h1>
+<h1 align="center">NODEJS-HW-06</h1>
 
 <p align="center">Empowering Secure Connections, Simplifying User Management</p>
 
 <p align="center">
   <!-- Dynamic badges - You may need to customize these for your specific GitHub repository -->
-  <img src="https://img.shields.io/github/last-commit/emrealtnts0/nodejs-hw-05?color=blue&label=last%20commit" alt="Last Commit">
-  <img src="https://img.shields.io/github/languages/top/emrealtnts0/nodejs-hw-05?color=orange&label=JavaScript" alt="JavaScript Percentage">
-  <img src="https://img.shields.io/github/languages/count/emrealtnts0/nodejs-hw-05?color=green&label=languages" alt="Languages Count">
+  <img src="https://img.shields.io/github/last-commit/emrealtnts0/nodejs-hw-06?color=blue&label=last%20commit" alt="Last Commit">
+  <img src="https://img.shields.io/github/languages/top/emrealtnts0/nodejs-hw-06?color=orange&label=JavaScript" alt="JavaScript Percentage">
+  <img src="https://img.shields.io/github/languages/count/emrealtnts0/nodejs-hw-06?color=green&label=languages" alt="Languages Count">
 </p>
 
 <p align="center">Built with the tools and technologies:</p>
@@ -16,13 +16,6 @@
   <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express.js">
   <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB">
   <img src="https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white" alt="npm">
-  <img src="https://img.shields.io/badge/Bcrypt-2E7D32?style=for-the-badge&logo=bcrypt&logoColor=white" alt="Bcrypt">
-  <img src="https://img.shields.io/badge/JSON%20Web%20Tokens-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white" alt="JSON Web Tokens">
-  <img src="https://img.shields.io/badge/Joi-E43B3D?style=for-the-badge&logo=joi&logoColor=white" alt="Joi">
-  <img src="https://img.shields.io/badge/Pino-FF0000?style=for-the-badge&logo=pino&logoColor=white" alt="Pino">
-  <img src="https://img.shields.io/badge/Nodemailer-40B133?style=for-the-badge&logo=nodemailer&logoColor=white" alt="Nodemailer">
-  <img src="https://img.shields.io/badge/Cors-222222?style=for-the-badge&logo=cors&logoColor=white" alt="Cors">
-  <img src="https://img.shields.io/badge/.env-ECD53F?style=for-the-badge&logo=dot-env&logoColor=black" alt=".env">
   <img src="https://img.shields.io/badge/Cloudinary-3399FF?style=for-the-badge&logo=cloudinary&logoColor=white" alt="Cloudinary">
   <img src="https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white" alt="ESLint">
   <img src="https://img.shields.io/badge/YAML-CB171E?style=for-the-badge&logo=yaml&logoColor=white" alt="YAML">
@@ -30,24 +23,23 @@
 
 ## Project Overview
 
-This project implements a robust REST API focusing on user authentication and contact management. Key features include secure user registration, login with JWT-based session management, password reset capabilities, and comprehensive CRUD operations for contacts, including photo upload. The API ensures secure connections and streamlines user data handling.
+This project is a REST API that includes user authentication, password reset functionality, and robust contact management features. It seamlessly integrates with Brevo for email services and Cloudinary for image upload and management.
 
-## Features Implemented in this Project
+## Features
 
-*   **User Authentication**: Secure registration, login, logout functionalities.
-*   **Session Management**: JWT-based access and refresh tokens for secure sessions.
-*   **Password Reset**: Functionality to send password reset emails and reset passwords using tokens.
-*   **Contact Management**: Full CRUD operations for contacts, including photo integration with Cloudinary.
-*   **Data Validation**: Robust input validation for all API endpoints.
-*   **Middleware for Authentication**: Custom middleware to secure contact routes.
-*   **User-Specific Contacts**: Ensures users can only manage their own contacts.
+- User authentication (register, login, logout)
+- JWT-based session management
+- Password reset via email
+- Contact management (CRUD operations)
+- Photo upload and management (Cloudinary integration)
+- Email sending (Brevo SMTP integration)
 
 ## Installation
 
 1.  **Clone the project**:
     ```bash
     git clone <repository-url>
-    cd nodejs-hw-05
+    cd nodejs-hw-06
     ```
 2.  **Install dependencies**:
     ```bash
@@ -70,10 +62,13 @@ This project implements a robust REST API focusing on user authentication and co
 
     # Email (Brevo)
     SMTP_HOST=smtp-relay.brevo.com
-    Smtp_port=587
+    SMTP_PORT=587
     SMTP_USER=your-brevo-username
     SMTP_PASSWORD=your-brevo-password
     SMTP_FROM=your-verified-email@domain.com
+
+    # Frontend Domain
+    APP_DOMAIN=http://localhost:3000/auth
 
     # Cloudinary
     CLOUDINARY_CLOUD_NAME=your-cloud-name
@@ -90,26 +85,34 @@ This project implements a robust REST API focusing on user authentication and co
 ### Authentication
 
 *   `POST /api/auth/register`: Register a new user.
-*   `POST /api/auth/login`: Log in an existing user and create a session with JWTs.
-*   `POST /api/auth/refresh`: Refresh an expired session using a refresh token.
-*   `POST /api/auth/logout`: Invalidate the current user session.
+*   `POST /api/auth/login`: Log in an existing user.
+*   `POST /api/auth/send-reset-email`: Request a password reset email.
+*   `POST /api/auth/reset-pwd`: Reset user password using a token.
+*   `POST /api/auth/logout`: Log out the current user.
 
 ### Contact Management
 
-*   `GET /api/contacts`: Retrieve all contacts for the authenticated user.
-*   `GET /api/contacts/:contactId`: Retrieve a specific contact by ID for the authenticated user.
-*   `POST /api/contacts`: Create a new contact for the authenticated user (supports photo upload).
-*   `PATCH /api/contacts/:contactId`: Update an existing contact by ID for the authenticated user (supports photo update).
-*   `DELETE /api/contacts/:contactId`: Delete a contact by ID for the authenticated user.
+*   `GET /api/contacts`: Retrieve all contacts (with optional query parameters for pagination, limit, and favorite status).
+*   `GET /api/contacts/:contactId`: Retrieve a specific contact by ID.
+*   `POST /api/contacts`: Create a new contact (supports photo upload).
+*   `PATCH /api/contacts/:contactId`: Update an existing contact (supports photo update).
+*   `DELETE /api/contacts/:contactId`: Delete a contact by ID.
 
-## Security Considerations
+## Security
 
-*   **Environment Variables**: All sensitive data is managed through `.env` files.
-*   **JWT Authentication**: Utilizes JSON Web Tokens for secure session management.
-*   **Password Hashing**: Passwords are securely hashed using `bcrypt` before storage.
-*   **Token Expiration**: Access tokens (15 minutes) and refresh tokens (30 days) have defined validity periods.
-*   **Route Protection**: Most API endpoints require `Bearer` token authentication.
-*   **User Isolation**: Ensures users can only access and modify their own contacts.
+*   All sensitive data is configured via `.env` file.
+*   JWT tokens are used for session management with defined expiration.
+*   Password reset tokens have a limited validity period.
+*   Passwords are securely hashed before storage.
+*   Most API endpoints require authentication with a Bearer token.
+
+## Email Service
+
+The application integrates with Brevo for email sending, particularly for password reset functionalities. Email templates are designed to be informative and secure.
+
+## Image Upload
+
+Image uploads are handled via Cloudinary, supporting various formats with automatic optimization and size limits.
 
 ## License
 
